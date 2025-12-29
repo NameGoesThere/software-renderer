@@ -108,14 +108,18 @@ void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Color color) {
 
 	for (int pointX = minX; pointX <= maxX; ++pointX) {
 		for (int pointY = minY; pointY <= maxY; ++pointY) {
-			float w1 = (x1 * (y3 - y1) + (pointY - y1) * (x3 - x1) -
-						pointX * (y3 - y1)) /
-					   (float)((y2 - y1) * (x3 - x1) - (x2 - x1) * (y3 - y1));
+			int s1 = y3 - y1;
+			int s2 = x3 - x1;
+			int s3 = y2 - y1;
+			int s4 = pointY - y1;
+
+			float w1 = (x1 * s1 + s4 * s2 - pointX * s1) /
+					   (float)(s3 * s2 - (x2 - x1) * s1);
 
 			if (w1 < 0)
 				continue;
 
-			float w2 = (pointY - y1 - w1 * (y2 - y1)) / (float)(y3 - y1);
+			float w2 = (s4 - w1 * s3) / (float)s1;
 
 			if (w2 < 0 || (w1 + w2) > 1)
 				continue;
