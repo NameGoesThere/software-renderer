@@ -95,11 +95,33 @@ void drawLine(int x1, int y1, int x2, int y2, Color color) {
 float rotateAmount = 0;
 float moveAmount = 0;
 
-// TODO Triangle filling
 void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Color color) {
-	drawLine(x1, y1, x2, y2, color);
-	drawLine(x1, y1, x3, y3, color);
-	drawLine(x2, y2, x3, y3, color);
+	// drawLine(x1, y1, x2, y2, color);
+	// drawLine(x1, y1, x3, y3, color);
+	// drawLine(x2, y2, x3, y3, color);
+
+	int minX = MIN(MIN(x1, x2), x3);
+	int maxX = MAX(MAX(x1, x2), x3);
+	int minY = MIN(MIN(y1, y2), y3);
+	int maxY = MAX(MAX(y1, y2), y3);
+
+	for (int pointX = minX; pointX <= maxX; ++pointX) {
+		for (int pointY = minY; pointY <= maxY; ++pointY) {
+			float w1 = (x1 * (y3 - y1) + (pointY - y1) * (x3 - x1) -
+						pointX * (y3 - y1)) /
+					   (float)((y2 - y1) * (x3 - x1) - (x2 - x1) * (y3 - y1));
+
+			if (w1 < 0)
+				continue;
+
+			float w2 = (pointY - y1 - w1 * (y2 - y1)) / (float)(y3 - y1);
+
+			if (w2 < 0 || (w1 + w2) > 1)
+				continue;
+
+			drawPixel(pointX, pointY, color);
+		}
+	}
 }
 
 void drawObject(Object *object, Color color) {
