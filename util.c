@@ -93,17 +93,18 @@ void drawLine(int x1, int y1, int x2, int y2, Color color) {
 }
 
 float rotateAmount = 0;
-float moveAmount = 0;
+float moveAmount = 1.5;
 
 void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Color color) {
-	// drawLine(x1, y1, x2, y2, color);
-	// drawLine(x1, y1, x3, y3, color);
-	// drawLine(x2, y2, x3, y3, color);
-
 	int minX = MIN(MIN(x1, x2), x3);
 	int maxX = MAX(MAX(x1, x2), x3);
 	int minY = MIN(MIN(y1, y2), y3);
 	int maxY = MAX(MAX(y1, y2), y3);
+
+	if (y1 == y3) {
+		swap(y1, y2);
+		swap(x1, x2);
+	}
 
 	for (int pointX = minX; pointX <= maxX; ++pointX) {
 		for (int pointY = minY; pointY <= maxY; ++pointY) {
