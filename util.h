@@ -46,6 +46,11 @@ typedef struct {
 	int numTriangles;
 } Object;
 
+typedef struct {
+	int index;
+	float maxZ;
+} ZOrderObject;
+
 Vec2 screenToNormalized(Vec2 point);
 Vec2 normalizedToScreen(Vec2 point);
 Vec2 normalizedToScreen3D(Vec3 point);
@@ -61,3 +66,4 @@ void drawObject(Object *object, Color color);
 void destroyObject(Object *object);
 
 int pointInBounds(int x, int y);
+int compareZOrder(const void *a, const void *b);

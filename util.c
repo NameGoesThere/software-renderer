@@ -96,6 +96,10 @@ float rotateAmount = 0;
 float moveAmount = 1.5;
 
 void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Color color) {
+	drawLine(x1, y1, x2, y2, WHITE);
+	drawLine(x1, y1, x3, y3, WHITE);
+	drawLine(x2, y2, x3, y3, WHITE);
+
 	int minX = MIN(MIN(x1, x2), x3);
 	int maxX = MAX(MAX(x1, x2), x3);
 	int minY = MIN(MIN(y1, y2), y3);
@@ -133,17 +137,30 @@ void drawObject(Object *object, Color color) {
 	if (!object)
 		return;
 
-	rotateAmount += 0.02;
-	moveAmount += 0.01;
+	ZOrderObject *zOrdering =
+		calloc(object->numTriangles, sizeof(ZOrderObject));
+
 	for (int i = 0; i < object->numTriangles; ++i) {
 		int *triangle = object->triangles[i];
 
-		Vec3 pointA =
-			rotateY(rotateX(object->points[triangle[0]], M_PI), rotateAmount);
-		Vec3 pointB =
-			rotateY(rotateX(object->points[triangle[1]], M_PI), rotateAmount);
-		Vec3 pointC =
-			rotateY(rotateX(object->points[triangle[2]], M_PI), rotateAmount);
+		Vec3 pointA = object->points[triangle[0]];
+		Vec3 pointB = object->points[triangle[1]];
+		Vec3 pointC = object->points[triangle[2]];
+
+		zOrdering[i] = (ZOrderObject){
+			.index = i, .maxZ = (pointA.z + pointB.z + pointC.z) / 3.0};
+	}
+
+	qsort(zOrdering, object->numTriangles, sizeof(ZOrderObject), compareZOrder);
+
+	rotateAmount += 0.02;
+	moveAmount += 0.01;
+	for (int i = 0; i < object->numTriangles; ++i) {
+		int *triangle = object->triangles[zOrdering[i].index];
+
+		Vec3 pointA = object->points[triangle[0]];
+		Vec3 pointB = object->points[triangle[1]];
+		Vec3 pointC = object->points[triangle[2]];
 
 		pointA.z += moveAmount;
 		pointB.z += moveAmount;
@@ -168,6 +185,8 @@ void drawObject(Object *object, Color color) {
 		drawTriangle(projectedA.x, projectedA.y, projectedB.x, projectedB.y,
 					 projectedC.x, projectedC.y, color);
 	}
+
+	free(zOrdering);
 }
 
 void destroyObject(Object *object) {
@@ -178,4 +197,17 @@ void destroyObject(Object *object) {
 
 inline int pointInBounds(int x, int y) {
 	return !(x < 0 || x >= screenInfo.xres || y < 0 || y >= screenInfo.yres);
+}
+
+int compareZOrder(const void *a, const void *b) {
+	const ZOrderObject *objA = (const ZOrderObject *)a;
+	const ZOrderObject *objB = (const ZOrderObject *)b;
+
+	if (objB->maxZ > objA->maxZ)
+		return 1;
+
+	if (objA->maxZ > objB->maxZ)
+		return -1;
+
+	return 0;
 }
