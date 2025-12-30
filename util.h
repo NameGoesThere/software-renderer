@@ -39,11 +39,19 @@ typedef struct {
 } Color;
 
 typedef struct {
+	int points[3];
+	int normal;
+} face;
+
+typedef struct {
 	Vec3 *points;
 	int numPoints;
 
-	int (*triangles)[3];
-	int numTriangles;
+	face *faces;
+	int numFaces;
+
+	Vec3 *normals;
+	int numNormals;
 } Object;
 
 typedef struct {

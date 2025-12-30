@@ -10,7 +10,7 @@ int frameBufferSize;
 char *restrict frameBuffer;
 char *restrict drawBuffer;
 
-Object *object;
+Object *object = NULL;
 
 void drawInit() {
 	frameBufferFD = open("/dev/fb0", O_RDWR);
@@ -42,6 +42,15 @@ void drawInit() {
 
 	if (argi > 1) {
 		object = objLoadObject(args[1]);
+
+		for (int i = 0; i < object->numPoints; ++i) {
+			object->points[i] = rotateX(object->points[i], 3.1416);
+			object->points[i].z += 2;
+		}
+
+		for (int i = 0; i < object->numNormals; ++i) {
+			object->normals[i] = rotateX(object->normals[i], 3.1416);
+		}
 	}
 }
 
@@ -49,6 +58,16 @@ void drawLoop() {
 	clear();
 
 	drawObject(object, INDIGO);
+
+	for (int i = 0; i < object->numPoints; ++i) {
+		object->points[i].z -= 2;
+		object->points[i] = rotateY(object->points[i], 0.02);
+		object->points[i].z += 2;
+	}
+
+	for (int i = 0; i < object->numNormals; ++i) {
+		object->normals[i] = rotateY(object->normals[i], 0.02);
+	}
 
 	if (argi > 1) {
 		drawText(args[1], strlen(args[1]), 5, 5, VIOLET);

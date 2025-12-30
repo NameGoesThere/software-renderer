@@ -92,14 +92,7 @@ void drawLine(int x1, int y1, int x2, int y2, Color color) {
 	}
 }
 
-float rotateAmount = 0;
-float moveAmount = 1.5;
-
 void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Color color) {
-	drawLine(x1, y1, x2, y2, WHITE);
-	drawLine(x1, y1, x3, y3, WHITE);
-	drawLine(x2, y2, x3, y3, WHITE);
-
 	int minX = MIN(MIN(x1, x2), x3);
 	int maxX = MAX(MAX(x1, x2), x3);
 	int minY = MIN(MIN(y1, y2), y3);
@@ -137,11 +130,10 @@ void drawObject(Object *object, Color color) {
 	if (!object)
 		return;
 
-	ZOrderObject *zOrdering =
-		calloc(object->numTriangles, sizeof(ZOrderObject));
+	ZOrderObject *zOrdering = calloc(object->numFaces, sizeof(ZOrderObject));
 
-	for (int i = 0; i < object->numTriangles; ++i) {
-		int *triangle = object->triangles[i];
+	for (int i = 0; i < object->numFaces; ++i) {
+		int *triangle = object->faces[i].points;
 
 		Vec3 pointA = object->points[triangle[0]];
 		Vec3 pointB = object->points[triangle[1]];
@@ -151,20 +143,15 @@ void drawObject(Object *object, Color color) {
 			.index = i, .maxZ = (pointA.z + pointB.z + pointC.z) / 3.0};
 	}
 
-	qsort(zOrdering, object->numTriangles, sizeof(ZOrderObject), compareZOrder);
+	qsort(zOrdering, object->numFaces, sizeof(ZOrderObject), compareZOrder);
 
-	rotateAmount += 0.02;
-	moveAmount += 0.01;
-	for (int i = 0; i < object->numTriangles; ++i) {
-		int *triangle = object->triangles[zOrdering[i].index];
+	for (int i = 0; i < object->numFaces; ++i) {
+		int *triangle = object->faces[zOrdering[i].index].points;
+		Vec3 normal = object->normals[object->faces[zOrdering[i].index].normal];
 
 		Vec3 pointA = object->points[triangle[0]];
 		Vec3 pointB = object->points[triangle[1]];
 		Vec3 pointC = object->points[triangle[2]];
-
-		pointA.z += moveAmount;
-		pointB.z += moveAmount;
-		pointC.z += moveAmount;
 
 		if (pointA.z < NEAR_PLANE || pointB.z < NEAR_PLANE ||
 			pointC.z < NEAR_PLANE)
@@ -182,16 +169,29 @@ void drawObject(Object *object, Color color) {
 		Vec2 projectedB = normalizedToScreen3D(pointB);
 		Vec2 projectedC = normalizedToScreen3D(pointC);
 
+		float light =
+			((normal.x * 0 + normal.y * -0.5 + normal.z * -0.5) + 1) / 2.0;
+
+		Color shadedColor = {
+			.red = (int)((float)color.red * light),
+			.green = (int)((float)color.green * light),
+			.blue = (int)((float)color.blue * light),
+		};
+
 		drawTriangle(projectedA.x, projectedA.y, projectedB.x, projectedB.y,
-					 projectedC.x, projectedC.y, color);
+					 projectedC.x, projectedC.y, shadedColor);
 	}
 
 	free(zOrdering);
 }
 
 void destroyObject(Object *object) {
+	if (!object)
+		return;
+
 	free(object->points);
-	free(object->triangles);
+	free(object->faces);
+	free(object->normals);
 	free(object);
 }
 
