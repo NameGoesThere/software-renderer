@@ -73,9 +73,9 @@ void drawLoop() {
 		drawText(args[1], strlen(args[1]), 5, 5, VIOLET);
 	}
 
-	memcpy(frameBuffer, drawBuffer, frameBufferSize);
-
 	ioctl(frameBufferFD, FBIO_WAITFORVSYNC);
+
+	memcpy(frameBuffer, drawBuffer, frameBufferSize);
 }
 
 void drawQuit() {
