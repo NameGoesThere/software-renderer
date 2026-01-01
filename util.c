@@ -170,7 +170,7 @@ void drawObject(Object *object, Color color) {
 		Vec2 projectedC = normalizedToScreen3D(pointC);
 
 		float light =
-			((normal.x * 0 + normal.y * -0.5 + normal.z * -0.5) + 1) / 2.0;
+			((normal.x * 0 + normal.y * -0.707 + normal.z * -0.707) + 1) / 2.0;
 
 		Color shadedColor = {
 			.red = (int)((float)color.red * light),
