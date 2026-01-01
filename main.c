@@ -11,6 +11,8 @@ int main(int argc, char *argv[]) {
 	argi = argc;
 	args = argv;
 
+	backend = BACKEND_X11;
+
 	drawInit();
 
 	while (1) {

@@ -1,13 +1,23 @@
 #include "util.h"
 
+inline int screenWidth() {
+	return backend == BACKEND_X11 ? backendX11_WindowWidth
+								  : backendFB_screenInfo.xres;
+}
+
+inline int screenHeight() {
+	return backend == BACKEND_X11 ? backendX11_WindowHeight
+								  : backendFB_screenInfo.yres;
+}
+
 inline Vec2 screenToNormalized(Vec2 point) {
-	return (Vec2){.values = {point.x / screenInfo.xres * 2.0 - 1,
-							 point.y / screenInfo.yres * 2.0 - 1}};
+	return (Vec2){.values = {point.x / screenWidth() * 2.0 - 1,
+							 point.y / screenHeight() * 2.0 - 1}};
 }
 
 inline Vec2 normalizedToScreen(Vec2 point) {
-	return (Vec2){.values = {(point.x + 1) / 2.0 * screenInfo.xres,
-							 (point.y + 1) / 2.0 * screenInfo.yres}};
+	return (Vec2){.values = {(point.x + 1) / 2.0 * screenWidth(),
+							 (point.y + 1) / 2.0 * screenHeight()}};
 }
 
 inline Vec2 normalizedToScreen3D(Vec3 point) {
@@ -47,7 +57,7 @@ void drawPixel(int x, int y, Color color) {
 	if (!pointInBounds(x, y))
 		return;
 
-	int offset = (y * screenInfo.xres + x) * 4;
+	int offset = (y * screenWidth() + x) * 4;
 
 	drawBuffer[offset] = color.blue;
 	drawBuffer[offset + 1] = color.green;
@@ -196,7 +206,7 @@ void destroyObject(Object *object) {
 }
 
 inline int pointInBounds(int x, int y) {
-	return !(x < 0 || x >= screenInfo.xres || y < 0 || y >= screenInfo.yres);
+	return !(x < 0 || x >= screenWidth() || y < 0 || y >= screenHeight());
 }
 
 int compareZOrder(const void *a, const void *b) {

@@ -59,6 +59,8 @@ typedef struct {
 	float maxZ;
 } ZOrderObject;
 
+int screenWidth();
+int screenHeight();
 Vec2 screenToNormalized(Vec2 point);
 Vec2 normalizedToScreen(Vec2 point);
 Vec2 normalizedToScreen3D(Vec3 point);
