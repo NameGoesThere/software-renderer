@@ -12,11 +12,15 @@ int main(int argc, char *argv[]) {
 		printf("Provide an obj model!\n");
 		exit(EXIT_FAILURE);
 	}
+	if (argc < 3) {
+		printf("Provide a backend (X11 OR FB)!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	backend = strcmp(argv[2], "X11") ? BACKEND_FB : BACKEND_X11;
 
 	argi = argc;
 	args = argv;
-
-	backend = BACKEND_X11;
 
 	drawInit();
 

@@ -118,12 +118,12 @@ void drawLoop() {
 
 	for (int i = 0; i < object->numPoints; ++i) {
 		object->points[i].z -= 2;
-		object->points[i] = rotateY(object->points[i], 0.02);
+		object->points[i] = rotateY(object->points[i], 0.01);
 		object->points[i].z += 2;
 	}
 
 	for (int i = 0; i < object->numNormals; ++i) {
-		object->normals[i] = rotateY(object->normals[i], 0.02);
+		object->normals[i] = rotateY(object->normals[i], 0.01);
 	}
 
 	if (argi > 1) {
