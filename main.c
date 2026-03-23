@@ -8,6 +8,11 @@ char **args;
 
 int main(int argc, char *argv[]) {
 
+	if (argc < 2) {
+		printf("Provide an obj model!\n");
+		exit(EXIT_FAILURE);
+	}
+
 	argi = argc;
 	args = argv;
 
